@@ -49,4 +49,11 @@ def decrypt_asymmetric(data,private_key):
     #decrypt and return the data
     return cipher.decrypt(b64decode(data)).decode('utf-8')
 
+#Hash data using sha256 hash function
+def hash(data,algorithm='sha256'):
+    if algorithm.lower()=='sha256':
+        hash_object=SHA256.new(data.encode('utf-8'))
+        return hash_object.hexdigest()
+    else:
+        return f"Error: Unsupported algorithm '{algorithm}'. Please use 'sha256'."
 

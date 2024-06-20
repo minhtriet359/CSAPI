@@ -33,3 +33,14 @@ def decrypt_asymmetric_route():
     key=request.json.get('key')
     decrypted_data = decrypt_asymmetric(data, key)
     return jsonify({'decrypted_data': decrypted_data})
+
+@main.route('/hash', methods=['POST'])
+def hash_route():
+    data=request.json.get('data')
+    if not data:
+        return jsonify({'error':'Missing data parameter'}),400
+    if not isinstance(data,str):
+        return jsonify({'error':'Only string argument can be hashed'}),400
+    hash_data = hash(data)
+    return jsonify({'hash_data': hash_data})
+

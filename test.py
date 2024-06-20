@@ -9,17 +9,10 @@ from Crypto.Random import get_random_bytes
 BASE="http://127.0.0.1:5000/"
 
 data={'name:':'Triet','age':28}
+#data='abcd'
+algorithm='sha-256'
 
-key=RSA.generate(2048)
-private_key=b64encode(key.export_key()).decode('utf-8')
-public_key=b64encode(key.publickey().export_key()).decode('utf-8')
-
-en_response=requests.post(BASE+"/encrypt-asymmetric",json={'data': data, 'key': public_key})
+en_response=requests.post(BASE+"/hash",json={'data': data})
 print(en_response.json())
-data=en_response.json()['encrypted_data']
+data=en_response.json().get('hash_data')
 print(data)
-
-input()
-
-de_response=requests.post(BASE+"/decrypt-asymmetric",json={'data': data, 'key': private_key})
-print(de_response.json())
