@@ -2,6 +2,7 @@ from base64 import b64encode, b64decode
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
+from Crypto.Signature import pkcs1_15
 import os
 import json
 
@@ -56,4 +57,29 @@ def hash(data,algorithm='sha256'):
         return hash_object.hexdigest()
     else:
         return f"Error: Unsupported algorithm '{algorithm}'. Please use 'sha256'."
+
+
+#Sign data with digital signature using private key
+def sign_data(data,private_key):
+    #decode the base64-encoded private key and imports it as an RSA private key object
+    key=RSA.import_key(b64decode(private_key))
+    #create a new SHA-256 hash object and hashes the input data
+    hash_object=SHA256.new(data.encode('utf-8'))
+    #signing the hash data
+    signature=pkcs1_15.new(key).sign(hash_object)
+    #encode and return the signature
+    return b64encode(signature).decode('utf-8')
+
+#Verify signature using public key
+def verify_signature(data, signature, public_key):
+    #decode the base64-encoded public key and imports it as an RSA public key object
+    key = RSA.import_key(b64decode(public_key))
+    #create a new SHA-256 hash object and hashes the input data
+    hash_object = SHA256.new(data.encode('utf-8'))
+    #Verify the signature
+    try:
+        pkcs1_15.new(key).verify(hash_object, b64decode(signature))
+        return True
+    except (ValueError, TypeError):
+        return False
 

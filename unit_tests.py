@@ -85,5 +85,33 @@ class TestHashAPI(unittest.TestCase):
         response=requests.post(BASE+"/hash",json={'data': self.data})
         self.assertEqual(response.status_code, 200) #Ensure request was successful
 
+#test digital signature functions
+class TestDigitalSignatureAPI(unittest.TestCase):
+
+    @classmethod
+    def setUp(cls):
+        #Generate a random AES key and encode it to base64
+        key=RSA.generate(2048)
+        cls.private_key=b64encode(key.export_key()).decode('utf-8')
+        cls.public_key=b64encode(key.publickey().export_key()).decode('utf-8')
+        cls.data = "abcd0124@"
+
+    def test_digital_signature(self):
+        #Send a POST request to encrypt the data
+        response=requests.post(BASE+"/sign",json={'data': self.data,'key':self.private_key})
+        #Ensure request was successful
+        self.assertEqual(response.status_code, 200)
+        #get signature from response
+        self.signature=response.json().get('signature')
+
+    def test_verify_signature(self):
+        #First, ensure encryption has happened
+        self.test_digital_signature()
+        
+        #Send a POST request to decrypt the data
+        response = requests.post(BASE + "/verify", json={'data': self.data,'signature':self.signature, 'key': self.public_key})
+        self.assertEqual(response.status_code, 200)
+        
+
 if __name__ == '__main__':
     unittest.main()
