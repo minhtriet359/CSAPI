@@ -109,7 +109,41 @@ class TestDigitalSignatureAPI(unittest.TestCase):
         #Send a POST request to decrypt the data
         response = requests.post(BASE + "/verify-signature", json={'data': self.data,'signature':self.signature, 'key': self.public_key})
         self.assertEqual(response.status_code, 200)
-        
+
+#test the key generating function
+class TestGenerateKeyAPI(unittest.TestCase):
+    def test_generate_symmetric_key(self):
+        response = requests.post(BASE+'/generate-key', json={'type': 'symmetric', 'algorithm': 'AES'})
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('key', data)
+        self.assertTrue(len(data['key']) > 0)
+    def test_generate_asymmetric_key(self):
+        response = requests.post(BASE+'/generate-key', json={'type': 'asymmetric', 'algorithm': 'RSA'})
+        data = response.json()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('private_key', data)
+        self.assertIn('public_key', data)
+        self.assertTrue(len(data['private_key']) > 0)
+        self.assertTrue(len(data['public_key']) > 0)
+    def test_invalid_key_type(self):
+        response = requests.post(BASE+'/generate-key', json={'ype': 'invalid', 'algorithm': 'AES'})
+        data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid key type. Must be "symmetric" or "asymmetric".')
+    def test_invalid_algorithm_for_symmetric(self):
+        response = requests.post(BASE+'/generate-key', json={'type': 'symmetric', 'algorithm': 'invalid'})
+        data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid algorithm for symmetric key. Must be "AES".')
+    def test_invalid_algorithm_for_asymmetric(self):
+        response = requests.post(BASE+'/generate-key', json={'type': 'asymmetric', 'algorithm': 'invalid'})
+        data = response.json()
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', data)
+        self.assertEqual(data['error'], 'Invalid algorithm for asymmetric key. Must be "RSA".')
 
 if __name__ == '__main__':
     unittest.main()

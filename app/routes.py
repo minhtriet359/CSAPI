@@ -1,5 +1,5 @@
 from flask import Blueprint,request,jsonify
-from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature)
+from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key)
 
 main=Blueprint('main',__name__)
 
@@ -119,3 +119,25 @@ def verify_signature_route():
         return jsonify('Signature verified'),200
     else:
         return jsonify({'error':'Signature and key do not match'}),400
+    
+@main.route('/generate-key',methods=['POST'])
+def generate_key_route():
+    #get type and algorithm
+    type=request.json.get('type')
+    algorithm=request.json.get('algorithm')
+    #error handling
+    if type not in ['symmetric', 'asymmetric']:
+        return jsonify({'error': 'Invalid key type. Must be "symmetric" or "asymmetric".'}), 400 
+    if type == 'symmetric' and algorithm != 'AES':
+        return jsonify({'error': 'Invalid algorithm for symmetric key. Must be "AES".'}), 400
+    if type == 'asymmetric' and algorithm != 'RSA':
+        return jsonify({'error': 'Invalid algorithm for asymmetric key. Must be "RSA".'}), 400
+    #generate keys
+    keys=generate_key(type,algorithm)
+    if keys is None:
+        return jsonify({'error': 'Failed to generate key(s).'}), 500
+    if type == 'symmetric':
+        return jsonify({'key': keys})
+    elif type == 'asymmetric':
+        private_key, public_key = keys
+        return jsonify({'private_key': private_key, 'public_key': public_key})
