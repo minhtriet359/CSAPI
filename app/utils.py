@@ -83,3 +83,15 @@ def verify_signature(data, signature, public_key):
     except (ValueError, TypeError):
         return False
 
+#generate symmetric and asymmetric keys
+def generate_key(type='symmetric', algorithm='AES'):
+    #generate a symmetric key using AES-256 algorithm
+    if type == 'symmetric' and algorithm == 'AES':
+        key = os.urandom(32)  #generate a 256-bit (32-byte) random key
+        return b64encode(key).decode('utf-8')  #encode the key in base64 and return as a string
+    #generate asymmetric keys using RSA algorithm
+    elif type == 'asymmetric' and algorithm == 'RSA':
+        key = RSA.generate(2048)  #generate an 2048 bit RSA key pair
+        private_key = b64encode(key.export_key()).decode('utf-8')  #export and encode private key in base64
+        public_key = b64encode(key.publickey().export_key()).decode('utf-8')  #export and encode public key in base64
+        return private_key, public_key  #return private key and public key pair
