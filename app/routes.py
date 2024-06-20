@@ -1,5 +1,7 @@
 from flask import Blueprint,request,jsonify
-from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key)
+from . import db
+from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key,encrypt_private_key,decrypt_private_key)
+from .models import (User,SymmetricKey,AsymmetricKeyPair,EncryptedData)
 
 main=Blueprint('main',__name__)
 
@@ -141,3 +143,18 @@ def generate_key_route():
     elif type == 'asymmetric':
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
+
+@main.route('/create-user',methods=['POST'])
+def create_user_route():
+    #get user data
+    username=request.json.get('username')
+    email=request.json.get('email')
+    password=request.json.get('password')
+    #error handling
+    if not username or not email or not password:
+        return jsonify({'Error':'Missing input.'}),400
+    #create new user and store in db
+    new_user=User(username=username,email=email,password=password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User created successfully'}), 201

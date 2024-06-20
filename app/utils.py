@@ -3,8 +3,13 @@ from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
+from cryptography.fernet import Fernet
 import os
 import json
+
+#Generate a key for encrypting private keys
+fernet_key=Fernet.generate_key()
+cipher_suite=Fernet(fernet_key)
 
 #Encrypt plain text data using symmetric private key
 def encrypt_symmetric(data,key):
@@ -95,3 +100,11 @@ def generate_key(type='symmetric', algorithm='AES'):
         private_key = b64encode(key.export_key()).decode('utf-8')  #export and encode private key in base64
         public_key = b64encode(key.publickey().export_key()).decode('utf-8')  #export and encode public key in base64
         return private_key, public_key  #return private key and public key pair
+
+#Encrypt private key
+def encrypt_private_key(private_key):
+    return cipher_suite.encrypt(private_key.encode('utf-8')).decode('utf-8')
+
+#Decrypt private key
+def decrypt_private_key(encrypted_private_key):
+    return cipher_suite.decrypt(encrypt_private_key.encode('utf-8')).decode('utf-8')
