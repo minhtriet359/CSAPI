@@ -76,6 +76,15 @@ class TestHashAPI(unittest.TestCase):
         #Send a post request to hash the data
         response=requests.post(BASE+"/hash",json={'data': self.data})
         self.assertEqual(response.status_code, 200) #Ensure request was successful
+        #get the hash from reponse
+        self.hash_data=response.json()['hash_data']
+        print(self.hash_data)
+    def test_verify_hash(self):
+        #First, make sure the hash happened
+        self.test_hash()
+        #Send a post request to verify hash
+        response=requests.post(BASE+"/hash",json={'data': self.data,'hash':self.hash_data})
+        self.assertEqual(response.status_code,200)
 
 
 #test digital signature functions
