@@ -80,7 +80,6 @@ class TestHashAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 200) #Ensure request was successful
         #get the hash from reponse
         self.hash_data=response.json()['hash_data']
-        print(self.hash_data)
     def test_verify_hash(self):
         #First, make sure the hash happened
         self.test_hash()
@@ -115,13 +114,13 @@ class TestDigitalSignatureAPI(unittest.TestCase):
 #test the key generating function
 class TestGenerateKeyAPI(unittest.TestCase):
     def test_generate_symmetric_key(self):
-        response = requests.post(BASE+'/generate-key', json={'type': 'symmetric', 'algorithm': 'AES'})
+        response = requests.post(BASE+'/key/generate', json={'type': 'symmetric', 'algorithm': 'AES'})
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertIn('key', data)
         self.assertTrue(len(data['key']) > 0)
     def test_generate_asymmetric_key(self):
-        response = requests.post(BASE+'/generate-key', json={'type': 'asymmetric', 'algorithm': 'RSA'})
+        response = requests.post(BASE+'/key/generate', json={'type': 'asymmetric', 'algorithm': 'RSA'})
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertIn('private_key', data)
@@ -129,19 +128,19 @@ class TestGenerateKeyAPI(unittest.TestCase):
         self.assertTrue(len(data['private_key']) > 0)
         self.assertTrue(len(data['public_key']) > 0)
     def test_invalid_key_type(self):
-        response = requests.post(BASE+'/generate-key', json={'ype': 'invalid', 'algorithm': 'AES'})
+        response = requests.post(BASE+'/key/generate', json={'type': 'invalid', 'algorithm': 'AES'})
         data = response.json()
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'Invalid key type. Must be "symmetric" or "asymmetric".')
     def test_invalid_algorithm_for_symmetric(self):
-        response = requests.post(BASE+'/generate-key', json={'type': 'symmetric', 'algorithm': 'invalid'})
+        response = requests.post(BASE+'/key/generate', json={'type': 'symmetric', 'algorithm': 'invalid'})
         data = response.json()
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'Invalid algorithm for symmetric key. Must be "AES".')
     def test_invalid_algorithm_for_asymmetric(self):
-        response = requests.post(BASE+'/generate-key', json={'type': 'asymmetric', 'algorithm': 'invalid'})
+        response = requests.post(BASE+'/key/generate', json={'type': 'asymmetric', 'algorithm': 'invalid'})
         data = response.json()
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', data)
@@ -155,7 +154,7 @@ class TestStoreKeyAPI(unittest.TestCase):
             'type': 'symmetric',
             'key': key
         }
-        response = requests.post(BASE + '/store-key', json=payload)
+        response = requests.post(BASE + '/key/store', json=payload)
         self.assertEqual(response.status_code, 201)
     def test_store_asymmetric_key(self):
         key = RSA.generate(2048) 
@@ -168,7 +167,7 @@ class TestStoreKeyAPI(unittest.TestCase):
                 'private_key':private_key,
             }
         }
-        response = requests.post(BASE + '/store-key', json=payload)
+        response = requests.post(BASE + '/key/store', json=payload)
         self.assertEqual(response.status_code, 201)
 
 if __name__ == '__main__':

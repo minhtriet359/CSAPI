@@ -122,7 +122,7 @@ def verify_signature_route():
     else:
         return jsonify({'error':'Signature and key do not match'}),400
     
-@main.route('/generate-key',methods=['POST'])
+@main.route('/key/generate',methods=['POST'])
 def generate_key_route():
     #get type and algorithm
     type=request.json.get('type')
@@ -144,7 +144,7 @@ def generate_key_route():
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
     
-@main.route('/store-key',methods=['POST'])
+@main.route('/key/store',methods=['POST'])
 def store_key_route():
     #get parameters
     key_type=request.json.get('type')
@@ -171,3 +171,33 @@ def store_key_route():
         db.session.rollback()
         return jsonify({'error': f'Failed to store key: {str(e)}'}), 500
 
+@main.route('/key/get',methods=['GET'])
+def get_key_route():
+    #get parameters
+    key_type=request.args.get('type')
+    #validate parameters
+    if not key_type:
+        return jsonify({'error': 'Missing key type parameter.'}), 400
+    if key_type not in ['symmetric', 'asymmetric']:
+        return jsonify({'error': 'Invalid key type. Must be "symmetric" or "asymmetric".'}), 400
+    try:
+        if key_type == 'symmetric':
+            # Retrieve symmetric key from database
+            symmetric_key = SymmetricKey.query.first()  # Adjust query as per your schema
+            if symmetric_key:
+                return jsonify({'key': symmetric_key.key}), 200
+            else:
+                return jsonify({'error': 'Symmetric key not found.'}), 404
+        elif key_type == 'asymmetric':
+            # Retrieve asymmetric keys from database
+            asymmetric_key_pair = AsymmetricKeyPair.query.first() 
+            if asymmetric_key_pair:
+                return jsonify({
+                    'private_key': asymmetric_key_pair.private_key,
+                    'public_key': asymmetric_key_pair.public_key
+                }), 200
+            else:
+                return jsonify({'error': 'Asymmetric keys not found.'}), 404
+    except Exception as e:
+        return jsonify({'error': f'Failed to retrieve key(s): {str(e)}'}), 500
+    
