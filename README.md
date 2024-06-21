@@ -2,6 +2,7 @@
 **A restful API that provides cryptographic services such as: symmetric encryption and decryption, asymmetric encryption and decryption, hashing data, digitally signing data, digital signature verification, key storing and retreiving**
 ### The purpose of the project is to learn and practice concepts:
 * Building a RESTful API.
+* Strengthening knowledge on crypto services
 * MVC Architectural Pattern.
 ### Following technologies and framework were used:
 * Flask framework, flask blueprints pattern
