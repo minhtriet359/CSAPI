@@ -27,9 +27,3 @@ class AsymmetricKeyPair(db.Model):
     private_key=db.Column(db.Text,nullable=False)
     created_at=db.Column(db.DateTime,default=db.func.current_timestamp())
     user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
-
-class EncryptedData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    data = db.Column(db.Text, nullable=False)
-    key_version = db.Column(db.Integer, nullable=False)
-    user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
