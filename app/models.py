@@ -2,7 +2,7 @@ from . import db
 
 class SymmetricKey(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    private_key=db.Column(db.Text,nullable=True)
+    key=db.Column(db.Text,nullable=True)
     created_at=db.Column(db.DateTime,default=db.func.current_timestamp())
 
 class AsymmetricKeyPair(db.Model):

@@ -143,4 +143,31 @@ def generate_key_route():
     elif type == 'asymmetric':
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
+    
+@main.route('/store-key',methods=['POST'])
+def store_key_route():
+    #get parameters
+    key_type=request.json.get('type')
+    key_data=request.json.get('key')
+    #validate parameters
+    if not key_type or not key_data:
+        return jsonify({'error': 'Missing required parameters.'}), 400
+    if key_type not in ['symmetric', 'asymmetric']:
+        return jsonify({'error': 'Invalid key type. Must be "symmetric" or "asymmetric".'}), 400
+    try:
+        # Store key in database based on type
+        if key_type == 'symmetric':
+            symmetric_key = SymmetricKey(key=key_data)
+            db.session.add(symmetric_key)
+            db.session.commit()
+            return jsonify({'message': 'Symmetric key stored successfully.'}), 201
+        elif key_type == 'asymmetric':
+            private_key, public_key = key_data['private_key'], key_data['public_key']
+            asymmetric_key = AsymmetricKeyPair(private_key=private_key, public_key=public_key)
+            db.session.add(asymmetric_key)
+            db.session.commit()
+            return jsonify({'message': 'Asymmetric keys stored successfully.'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to store key: {str(e)}'}), 500
 

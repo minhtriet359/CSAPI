@@ -5,6 +5,8 @@ from Crypto.Random import get_random_bytes
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
+from app.models import SymmetricKey, AsymmetricKeyPair
+from app import create_app, db
 
 BASE = "http://127.0.0.1:5000/"
 
@@ -144,6 +146,30 @@ class TestGenerateKeyAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'Invalid algorithm for asymmetric key. Must be "RSA".')
+
+#test key storage
+class TestStoreKeyAPI(unittest.TestCase):
+    def test_store_symmetric_key(self):
+        key = b64encode(get_random_bytes(32)).decode('utf-8')
+        payload = {
+            'type': 'symmetric',
+            'key': key
+        }
+        response = requests.post(BASE + '/store-key', json=payload)
+        self.assertEqual(response.status_code, 201)
+    def test_store_asymmetric_key(self):
+        key = RSA.generate(2048) 
+        private_key = b64encode(key.export_key()).decode('utf-8')
+        public_key = b64encode(key.publickey().export_key()).decode('utf-8')
+        payload = {
+            'type': 'asymmetric',
+            'key': {
+                'public_key':public_key,
+                'private_key':private_key,
+            }
+        }
+        response = requests.post(BASE + '/store-key', json=payload)
+        self.assertEqual(response.status_code, 201)
 
 if __name__ == '__main__':
     unittest.main()
