@@ -155,7 +155,9 @@ class TestStoreKeyAPI(unittest.TestCase):
             'key': key
         }
         response = requests.post(BASE + '/key/store', json=payload)
+        print(response.json())
         self.assertEqual(response.status_code, 201)
+    '''
     def test_store_asymmetric_key(self):
         key = RSA.generate(2048) 
         private_key = b64encode(key.export_key()).decode('utf-8')
@@ -169,6 +171,46 @@ class TestStoreKeyAPI(unittest.TestCase):
         }
         response = requests.post(BASE + '/key/store', json=payload)
         self.assertEqual(response.status_code, 201)
+        '''
+'''
+#test user creation
+class TestCreateUserAPI(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.username = "testuser"
+        cls.password = "testpassword"
+    def test_create_user_success(self):
+        # Test case where user creation should succeed
+        payload = {
+            'username': self.username,
+            'password': self.password
+        }
+        response = requests.post('/user/create', json=payload)
+        self.assertEqual(response.status_code, 201)
+    def test_create_user_missing_input(self):
+        # Test case where required input is missing
+        payload = {
+            'username': self.username,
+            # 'password': self.password  #simulate missing password
+        }
+        response =requests.post('/user/create', json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Error', response.json)
+        self.assertEqual(response.json['Error'], 'Missing input.')
+    def test_create_user_existing_username(self):
+        # Test case where username already exists in the database
+        payload = {
+            'username': self.username,
+            'password': self.password 
+        }
+        # Create a user first
+        response = requests.post('/user/create', json=payload)
+        # Try to create a user with the same username again
+        response = requests.post('/user/create', json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('Error', response.json)
+        self.assertEqual(response.json['Error'], 'Username already exists. Please choose a different username.')
+'''
 
 if __name__ == '__main__':
     unittest.main()

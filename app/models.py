@@ -1,18 +1,29 @@
 from . import db
+from sqlalchemy.orm import relationship
+
+class User(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    username=db.Column(db.String(20),nullable=False,unique=True)
+    password=db.Column(db.String(20),nullable=False)
+    encrypted_data=relationship('EncryptedData',backref='user',lazy=True)
+    symmetric_key=relationship('SymmetricKey',backref='user',lazy=True)
+    asymmetric_key_pairs=relationship('AsymmetricKeyPair',backref='user',lazy=True)
 
 class SymmetricKey(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    key=db.Column(db.Text,nullable=True)
+    key=db.Column(db.Text,nullable=False)
     created_at=db.Column(db.DateTime,default=db.func.current_timestamp())
+    user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 
 class AsymmetricKeyPair(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    public_key=db.Column(db.Text,nullable=True)
-    private_key=db.Column(db.Text,nullable=True)
+    public_key=db.Column(db.Text,nullable=False)
+    private_key=db.Column(db.Text,nullable=False)
     created_at=db.Column(db.DateTime,default=db.func.current_timestamp())
+    user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)
 
 class EncryptedData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data = db.Column(db.Text, nullable=False)
     key_version = db.Column(db.Integer, nullable=False)
-
+    user_id=db.Column(db.Integer,db.ForeignKey('user.id'),nullable=False)

@@ -4,6 +4,8 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from cryptography.fernet import Fernet
+from models import User
+from flask import jsonify
 import os
 import json
 
@@ -108,3 +110,30 @@ def encrypt_private_key(private_key):
 #Decrypt private key
 def decrypt_private_key(encrypted_private_key):
     return cipher_suite.decrypt(encrypt_private_key.encode('utf-8')).decode('utf-8')
+
+#Get user_id from username and password
+def get_userid(username, password):
+    try:
+        user = User.query.filter_by(username=username).first()
+        if user:
+            return user.id
+        else:
+            return None  # Return None if user does not exist
+    except Exception as e:
+        return str(e)  # Convert exception to string and return (for debugging/logging)
+
+
+# Verify password
+def verify_password(username, password):
+    try:
+        # Query the User object by username
+        user = User.query.filter_by(username=username).first()  
+        # Check if user with the given username exists
+        if not user:
+            return jsonify({'Error': 'User not found.'}), 404
+        # Retrieve the password
+        retrieved_password = user.password
+        # Verify the password
+        return password == retrieved_password
+    except Exception as e:
+        return str(e)  # Convert exception to string and return (for debugging/logging)
