@@ -145,26 +145,5 @@ class TestGenerateKeyAPI(unittest.TestCase):
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'Invalid algorithm for asymmetric key. Must be "RSA".')
 
-class TestCreateUserRoute(unittest.TestCase):
-    def test_create_user(self):
-        #Test data for creating a user
-        user_data = {
-            'username': 'testuser',
-            'password': 'password123',
-            'email': 'testuser@example.com'
-        }
-        #Send a POST request to the create_user endpoint
-        response = requests.post(BASE + "/create-user", json=user_data)
-        #Assert the response status code is 200 (or any other expected status)
-        self.assertEqual(response.status_code, 201)
-        #Test invalid inputs
-        invalid_data = {
-            'username': '',
-            'password': 'short',
-            'email': 'invalid_email'
-        }
-        response_invalid = requests.post(BASE+ "/create-user", json=invalid_data)
-        self.assertNotEqual(response_invalid.status_code, 200)  # Expecting a failure status code
-
 if __name__ == '__main__':
     unittest.main()

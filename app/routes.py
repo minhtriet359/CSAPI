@@ -144,17 +144,3 @@ def generate_key_route():
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
 
-@main.route('/create-user',methods=['POST'])
-def create_user_route():
-    #get user data
-    username=request.json.get('username')
-    email=request.json.get('email')
-    password=request.json.get('password')
-    #error handling
-    if not username or not email or not password:
-        return jsonify({'Error':'Missing input.'}),400
-    #create new user and store in db
-    new_user=User(username=username,email=email,password=password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
