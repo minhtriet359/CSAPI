@@ -1,7 +1,7 @@
 from flask import Blueprint,request,jsonify
 from . import db
 from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key,encrypt_private_key,decrypt_private_key)
-from .models import (SymmetricKey,AsymmetricKeyPair,EncryptedData,User)
+from .models import (SymmetricKey,AsymmetricKeyPair,User)
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 main=Blueprint('main',__name__)
