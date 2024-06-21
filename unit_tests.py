@@ -28,14 +28,12 @@ class TestSymmetricEncryptionAPI(unittest.TestCase):
     def test_decrypt_symmetric(self):
         #First, ensure encryption has happened
         self.test_encrypt_symmetric()
-        
         #Send a POST request to decrypt the data
         response = requests.post(BASE + "/decrypt-symmetric", json={'data': self.encrypted_data, 'key': self.key})
         self.assertEqual(response.status_code, 200)
         response_data = response.json()
         self.assertIn('decrypted_data', response_data)
         decrypted_data = response_data['decrypted_data']
-
         #Check if the decrypted data matches the original data
         self.assertEqual(decrypted_data, self.data)
 
@@ -157,7 +155,6 @@ class TestStoreKeyAPI(unittest.TestCase):
         response = requests.post(BASE + '/key/store', json=payload)
         print(response.json())
         self.assertEqual(response.status_code, 201)
-    '''
     def test_store_asymmetric_key(self):
         key = RSA.generate(2048) 
         private_key = b64encode(key.export_key()).decode('utf-8')
@@ -171,7 +168,6 @@ class TestStoreKeyAPI(unittest.TestCase):
         }
         response = requests.post(BASE + '/key/store', json=payload)
         self.assertEqual(response.status_code, 201)
-        '''
 '''
 #test user creation
 class TestCreateUserAPI(unittest.TestCase):

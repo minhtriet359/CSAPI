@@ -4,7 +4,7 @@ from Crypto.PublicKey import RSA
 from Crypto.Hash import SHA256
 from Crypto.Signature import pkcs1_15
 from cryptography.fernet import Fernet
-from models import User
+from .models import User
 from flask import jsonify
 import os
 import json

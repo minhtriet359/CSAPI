@@ -2,6 +2,7 @@ from flask import Blueprint,request,jsonify
 from . import db
 from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key,encrypt_private_key,decrypt_private_key)
 from .models import (SymmetricKey,AsymmetricKeyPair,EncryptedData,User)
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 
 main=Blueprint('main',__name__)
 
@@ -143,10 +144,12 @@ def generate_key_route():
     elif type == 'asymmetric':
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
-    
+
 @main.route('/key/store',methods=['POST'])
+@jwt_required()
 def store_key_route():
     #get parameters
+    current_user_username = get_jwt_identity()
     key_type=request.json.get('type')
     key_data=request.json.get('key')
     #validate parameters
@@ -155,15 +158,18 @@ def store_key_route():
     if key_type not in ['symmetric', 'asymmetric']:
         return jsonify({'error': 'Invalid key type. Must be "symmetric" or "asymmetric".'}), 400
     try:
-        # Store key in database based on type
+        #Get user for user id
+        user = User.query.filter_by(username=current_user_username).first()
         if key_type == 'symmetric':
-            symmetric_key = SymmetricKey(key=key_data)
+            symmetric_key = SymmetricKey(key=key_data,user_id=user.id)
             db.session.add(symmetric_key)
             db.session.commit()
             return jsonify({'message': 'Symmetric key stored successfully.'}), 201
         elif key_type == 'asymmetric':
+            if not isinstance(key_data, dict) or 'private_key' not in key_data or 'public_key' not in key_data:
+                return jsonify({'error': 'Invalid key data for asymmetric key.'}), 400
             private_key, public_key = key_data['private_key'], key_data['public_key']
-            asymmetric_key = AsymmetricKeyPair(private_key=private_key, public_key=public_key)
+            asymmetric_key = AsymmetricKeyPair(private_key=private_key, public_key=public_key,user_id=user)
             db.session.add(asymmetric_key)
             db.session.commit()
             return jsonify({'message': 'Asymmetric keys stored successfully.'}), 201
@@ -172,8 +178,10 @@ def store_key_route():
         return jsonify({'error': f'Failed to store key: {str(e)}'}), 500
 
 @main.route('/key/get',methods=['GET'])
+@jwt_required()
 def get_key_route():
     #get parameters
+    current_user_username = get_jwt_identity()
     key_type=request.args.get('type')
     #validate parameters
     if not key_type:
@@ -181,16 +189,18 @@ def get_key_route():
     if key_type not in ['symmetric', 'asymmetric']:
         return jsonify({'error': 'Invalid key type. Must be "symmetric" or "asymmetric".'}), 400
     try:
+        #Get user for user id
+        user = User.query.filter_by(username=current_user_username).first()
         if key_type == 'symmetric':
             # Retrieve symmetric key from database
-            symmetric_key = SymmetricKey.query.first()  # Adjust query as per your schema
+            symmetric_key = SymmetricKey.query.filter_by(user_id=user.id).first()
             if symmetric_key:
                 return jsonify({'key': symmetric_key.key}), 200
             else:
                 return jsonify({'error': 'Symmetric key not found.'}), 404
         elif key_type == 'asymmetric':
             # Retrieve asymmetric keys from database
-            asymmetric_key_pair = AsymmetricKeyPair.query.first() 
+            asymmetric_key_pair = AsymmetricKeyPair.query.filter_by(user_id=user.id).first()
             if asymmetric_key_pair:
                 return jsonify({
                     'private_key': asymmetric_key_pair.private_key,
@@ -201,7 +211,7 @@ def get_key_route():
     except Exception as e:
         return jsonify({'error': f'Failed to retrieve key(s): {str(e)}'}), 500
     
-@main.route('/user/create',methods=['POST'])
+@main.route('/user/register',methods=['POST'])
 def create_user_route():
     #get user data
     username=request.json.get('username')
@@ -210,11 +220,27 @@ def create_user_route():
     if not username or not password:
         return jsonify({'Error':'Missing input.'}),400
     # Check if username already exists in the database
-    existing_user = User.query.filter_by(username=username).first()
-    if existing_user:
+    if User.query.filter_by(username=username).first():
         return jsonify({'Error': 'Username already exists. Please choose a different username.'}), 400
     #create new user and store in db
-    new_user=User(username=username,password=password)
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({'message': 'User created successfully'}), 201
+    new_user = User(username=username)
+    new_user.set_password(password)
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User created successfully'}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Failed to register user: {str(e)}'}), 500
+    
+@main.route('/user/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+    user = User.query.filter_by(username=username).first()
+    if user and user.check_password(password):
+        access_token = create_access_token(identity=username)
+        return jsonify(access_token=access_token), 200
+    else:
+        return jsonify({'error': 'Invalid username or password'}), 401

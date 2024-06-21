@@ -1,5 +1,7 @@
 from . import db
 from sqlalchemy.orm import relationship
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class User(db.Model):
     id=db.Column(db.Integer,primary_key=True)
@@ -8,6 +10,10 @@ class User(db.Model):
     encrypted_data=relationship('EncryptedData',backref='user',lazy=True)
     symmetric_key=relationship('SymmetricKey',backref='user',lazy=True)
     asymmetric_key_pairs=relationship('AsymmetricKeyPair',backref='user',lazy=True)
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 class SymmetricKey(db.Model):
     id=db.Column(db.Integer,primary_key=True)
