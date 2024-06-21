@@ -7,7 +7,6 @@ class User(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     username=db.Column(db.String(20),nullable=False,unique=True)
     password=db.Column(db.String(20),nullable=False)
-    encrypted_data=relationship('EncryptedData',backref='user',lazy=True)
     symmetric_key=relationship('SymmetricKey',backref='user',lazy=True)
     asymmetric_key_pairs=relationship('AsymmetricKeyPair',backref='user',lazy=True)
     def set_password(self, password):

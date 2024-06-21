@@ -1,4 +1,4 @@
-from flask import Blueprint,request,jsonify
+from flask import Blueprint,request,jsonify,send_from_directory
 from . import db
 from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key,encrypt_private_key,decrypt_private_key)
 from .models import (SymmetricKey,AsymmetricKeyPair,User)
@@ -8,6 +8,10 @@ main=Blueprint('main',__name__)
 
 #Define endpoints
 #Define route handlers for our API
+
+@main.route('/')
+def documentation():
+    return send_from_directory('static','docs.html')
 
 @main.route('/encrypt-symmetric', methods=['POST'])
 def encrypt_symmetric_route():

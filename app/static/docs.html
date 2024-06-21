@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        h2 {
+            color: #666;
+        }
+        pre {
+            background-color: #f7f7f7;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        code {
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>API Documentation</h1>
+    <p>Welcome to the API documentation for our service.</p>
+
+    <h2>/encrypt-symmetric</h2>
+    <p><strong>POST</strong> Encrypt data using a symmetric key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "encrypted_data": "string"
+        }
+    </code></pre>
+
+    <h2>/decrypt-symmetric</h2>
+    <p><strong>POST</strong> Decrypt data using a symmetric key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "decrypted_data": "string"
+        }
+    </code></pre>
+
+    <h2>/encrypt-asymmetric</h2>
+    <p><strong>POST</strong> Encrypt data using an asymmetric key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "encrypted_data": "string"
+        }
+    </code></pre>
+
+    <h2>/decrypt-asymmetric</h2>
+    <p><strong>POST</strong> Decrypt data using an asymmetric key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "decrypted_data": "string"
+        }
+    </code></pre>
+
+    <h2>/hash</h2>
+    <p><strong>POST</strong> Compute hash of a string.</p>
+    <pre><code>
+        {
+            "data": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "hash_data": "string"
+        }
+    </code></pre>
+
+    <h2>/verify-hash</h2>
+    <p><strong>POST</strong> Verify hash of a string.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "hash": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "message": "Hash verification successful"
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Hash verification failed"
+        }
+    </code></pre>
+
+    <h2>/sign</h2>
+    <p><strong>POST</strong> Sign data using a key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "signature": "string"
+        }
+    </code></pre>
+
+    <h2>/verify-signature</h2>
+    <p><strong>POST</strong> Verify data signature using a key.</p>
+    <pre><code>
+        {
+            "data": "string",
+            "signature": "string",
+            "key": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "message": "Signature verified"
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Signature and key do not match"
+        }
+    </code></pre>
+
+    <h2>/key/generate</h2>
+    <p><strong>POST</strong> Generate keys (symmetric or asymmetric).</p>
+    <pre><code>
+        {
+            "type": "symmetric" | "asymmetric",
+            "algorithm": "AES" | "RSA"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "key": "string"  // For symmetric keys
+        }
+    </code></pre>
+    <pre><code>
+        {
+            "private_key": "string",
+            "public_key": "string"  // For asymmetric keys
+        }
+    </code></pre>
+
+    <h2>/key/store</h2>
+    <p><strong>POST</strong> Store keys in the database.</p>
+    <pre><code>
+        {
+            "type": "symmetric" | "asymmetric",
+            "key": "string" | {"private_key": "string", "public_key": "string"}
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "message": "Keys stored successfully"
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Failed to store keys"
+        }
+    </code></pre>
+
+    <h2>/key/get</h2>
+    <p><strong>GET</strong> Retrieve keys from the database.</p>
+    <p><strong>Query Parameters:</strong></p>
+    <pre><code>
+        type=symmetric | asymmetric
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "key": "string"  // For symmetric keys
+        }
+    </code></pre>
+    <pre><code>
+        {
+            "private_key": "string",
+            "public_key": "string"  // For asymmetric keys
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Failed to retrieve keys"
+        }
+    </code></pre>
+
+    <h2>/user/register</h2>
+    <p><strong>POST</strong> Register a new user.</p>
+    <pre><code>
+        {
+            "username": "string",
+            "password": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "message": "User created successfully"
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Failed to register user"
+        }
+    </code></pre>
+
+    <h2>/user/login</h2>
+    <p><strong>POST</strong> Authenticate user login.</p>
+    <pre><code>
+        {
+            "username": "string",
+            "password": "string"
+        }
+    </code></pre>
+    <p><strong>Response:</strong></p>
+    <pre><code>
+        {
+            "access_token": "string"
+        }
+    </code></pre>
+    <p><strong>Error Response:</strong></p>
+    <pre><code>
+        {
+            "error": "Invalid username or password"
+        }
+    </code></pre>
+
+</body>
+</html>
