@@ -1,7 +1,7 @@
 from flask import Blueprint,request,jsonify
 from . import db
 from .utils import (encrypt_symmetric,decrypt_symmetric,encrypt_asymmetric,decrypt_asymmetric,sign_data,verify_signature,generate_key,encrypt_private_key,decrypt_private_key)
-from .models import (User,SymmetricKey,AsymmetricKeyPair,EncryptedData)
+from .models import (SymmetricKey,AsymmetricKeyPair,EncryptedData)
 
 main=Blueprint('main',__name__)
 
