@@ -144,6 +144,10 @@ def generate_key_route():
         private_key, public_key = keys
         return jsonify({'private_key': private_key, 'public_key': public_key})
 
+@main.route('/store-key',methods=[POST])
+def store_key_route():
+    
+
 @main.route('/create-user',methods=['POST'])
 def create_user_route():
     #get user data
@@ -153,6 +157,10 @@ def create_user_route():
     #error handling
     if not username or not email or not password:
         return jsonify({'Error':'Missing input.'}),400
+    # Check if username already exists in the database
+    existing_user = User.query.filter_by(username=username).first()
+    if existing_user:
+        return jsonify({'Error': 'Username already exists. Please choose a different username.'}), 400
     #create new user and store in db
     new_user=User(username=username,email=email,password=password)
     db.session.add(new_user)

@@ -2,7 +2,7 @@ from . import db
 
 class User(db.Model):
     id=db.Column(db.Integer,primary_key=True)
-    username=db.Column(db.String(20),nullable=True)
+    username=db.Column(db.String(20),nullable=True,unique=True)
     password=db.Column(db.String(20),nullable=True)
     email=db.Column(db.String(50),nullable=True)
     symmetric_keys=db.relationship('SymmetricKey',backref='user',lazy=True)
