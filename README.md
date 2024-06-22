@@ -1,5 +1,6 @@
 # Crytography Services Restful API
 **A restful API that provides cryptographic services such as: symmetric encryption and decryption, asymmetric encryption and decryption, hashing data, digitally signing data, digital signature verification, key storing and retreiving**
+### Link: http://3.15.178.19:5000/
 ### The purpose of the project is to learn and practice concepts:
 * Building a RESTful API.
 * Strengthening knowledge on crypto services
@@ -13,7 +14,6 @@
 * HTTP (GET, POST, PUT, PATCH, DELETE, status codes)
 * Postman for testing endpoints
 ### API Endpoints:
-
 ![API endpoints](https://github.com/minhtriet359/CryptoServiceAPI/assets/148809094/29b5001c-b034-4ea0-90a1-7e3628f69366)
 ### Sample Endpoints from Postman:
 * Generate symmetric key:
