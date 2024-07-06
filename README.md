@@ -37,6 +37,6 @@
 ![store_key](https://github.com/minhtriet359/CryptoServiceAPI/assets/148809094/2b53d95c-dda1-49d3-a9aa-3f434137a9e4)
 ![get_key_from_storage](https://github.com/minhtriet359/CryptoServiceAPI/assets/148809094/2e49f530-3f3d-4e01-8221-05e03f242f75)
 
-
-  
+### To activate virtual env on AWS for update:
+source venv/bin/activate
 
