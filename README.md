@@ -40,3 +40,7 @@
 ### To activate virtual env on AWS for update:
 source venv/bin/activate
 
+### Restart API:
+pkill gunicorn
+gunicorn --bind 0.0.0.0:5000 main:app
+
