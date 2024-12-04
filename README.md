@@ -1,5 +1,5 @@
 # Crytography Services Restful API
-**A restful API that provides cryptographic services such as: symmetric encryption and decryption, asymmetric encryption and decryption, hashing data, digitally signing data, digital signature verification, key storing and retreiving**
+**A restful API that provides cryptographic services such as: symmetric encryption and decryption, asymmetric encryption and decryption, hashing data, digitally signing data, digital signature verification, key storing and retrieving**
 ### Link: http://3.15.178.19:5000/
 ### The purpose of the project is to learn and practice concepts:
 * Building a RESTful API.
